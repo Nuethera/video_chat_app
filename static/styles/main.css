@@ -11,7 +11,14 @@ body{
 }
 
 /* ------- Lobby Styling ---------- */
+#team-name{
+    text-align: center;
+    margin: 20px;
+}
 
+    #team-name h1{
+        font-size: 36px;
+    }
 
 #logo{
     display: block;
