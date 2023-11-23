@@ -4,7 +4,11 @@ from agora_token_builder import RtcTokenBuilder
 import random, time, json
 import os
 from .models import RoomMember
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from openai import OpenAI
+client = OpenAI()
+
+
 
 # Create your views here.
 
@@ -26,6 +30,9 @@ def lobby(request):
 
 def room(request):
     return render(request, 'base/room.html')
+
+def chatroom(request):
+    return render(request, 'base/chatroom.html')
 
 @csrf_exempt
 def createMember(request):
@@ -49,6 +56,28 @@ def getMember(request):
     )
 
     return JsonResponse({'name': member.name}, safe=False)
+
+@csrf_exempt
+def api(request):
+    # return JsonResponse({'content': "con.content"}, safe=False)
+    data = json.loads(request.body)
+    print(data)
+    message = data['message']
+    # Send the message to OpenAI's API and receive the response
+    completion = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "user", "content":message }
+        ]
+    )
+    if completion.choices[0].message!=None:
+        con = completion.choices[0].message
+        print (con)
+        return JsonResponse({'content': con.content}, safe=False)
+        #return con
+    else :
+        return  JsonResponse('Failed to Generate response!', safe=False)
+
 
 @csrf_exempt
 def deleteMember(request):
